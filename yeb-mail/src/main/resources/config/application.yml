@@ -1,0 +1,48 @@
+server:
+  port: 8082
+
+spring:
+  mail:
+    host: smtp.qq.com
+    protocol: smtp
+    default-encoding: utf-8
+    password: hgmsobfaqvkndjbg
+    username: 2501317859@qq.com
+    port: 25
+
+  rabbitmq:
+    username: rabbit
+    password: 123456
+    host: 127.0.0.1
+    port: 5672
+    listener:
+      simple:
+        #开启手动确认
+        acknowledge-mode: manual
+
+  # Redis配置
+  redis:
+    # 超时时间
+    timeout: 10000ms
+    # 服务器地址
+    host: 127.0.0.1
+    # 端口号
+    port: 6379
+    # 数据库(第几个)
+    database: 0
+    # 密码
+    password: 123456
+    lettuce:
+      pool:
+        # 最大连接数（默认8）
+        max-active: 1024
+        # 最大连接阻塞时间，默认-1
+        max-wait: 10000ms
+        # 最大空闲连接
+        max-idle: 200
+        # 最小空闲连接
+        min-idle: 5
+
+
+
+
