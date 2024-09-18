@@ -10,12 +10,12 @@ import java.util.UUID;
 
 public class OssUploadUtil {
     public static String uploadFile(MultipartFile multipartFile){
-        String endpoint = "oss-cn-hangzhou.aliyuncs.com";
+        String endpoint = "";
         // 阿里云账号AccessKey拥有所有API的访问权限，风险很高。强烈建议您创建并使用RAM用户进行API访问或日常运维，请登录RAM控制台创建RAM用户。
-        String accessKeyId = "LTAI5tDBkdi5eDmZLhgPwyJ3";
-        String accessKeySecret = "rPUMVi8V8kAQR1icW0pAkaBjZxrVKC";
+        String accessKeyId = "";
+        String accessKeySecret = "";
         // 填写Bucket名称
-        String bucketName = "workbarket";
+        String bucketName = "";
 
 
         OSS ossClient = null;
