@@ -28,7 +28,7 @@ import java.util.List;
 
 /**
  * <p>
- *  前端控制器
+ * 前端控制器
  * </p>
  *
  * @author like
@@ -53,59 +53,59 @@ public class EmployeeController {
     @ApiOperation(value = "获取所有员工(分页)")
     @GetMapping("/")
     public RespPageBean getEmployee(@RequestParam(defaultValue = "1") Integer currentPage,
-                                    @RequestParam(defaultValue = "10")Integer size,
+                                    @RequestParam(defaultValue = "10") Integer size,
                                     Employee employee,
-                                    LocalDate[] beginDateScope){
-        return employeeService.getEmployeeByPage(currentPage,size,employee,beginDateScope);
+                                    LocalDate[] beginDateScope) {
+        return employeeService.getEmployeeByPage(currentPage, size, employee, beginDateScope);
 
     }
 
     @ApiOperation(value = "获取所有政治面貌")
     @GetMapping("/politicsStatus")
-    public List<PoliticsStatus> getAllPoliticsStatus(){
+    public List<PoliticsStatus> getAllPoliticsStatus() {
         return politicsStatusService.list();
     }
 
     @ApiOperation(value = "获取所有职称")
     @GetMapping("/joblevels")
-    public List<Joblevel> getAllJoblevels(){
+    public List<Joblevel> getAllJoblevels() {
         return joblevelService.list();
     }
 
     @ApiOperation(value = "获取所有民族")
     @GetMapping("/nations")
-    public List<Nation> getAllNations(){
+    public List<Nation> getAllNations() {
         return nationService.list();
     }
 
     @ApiOperation(value = "获取所有职位")
     @GetMapping("/positions")
-    public List<Position> getAllPositions(){
+    public List<Position> getAllPositions() {
         return positionService.list();
     }
 
     @ApiOperation(value = "获取所有部门")
     @GetMapping("/deps")
-    public List<Department> getAllDepartments(){
+    public List<Department> getAllDepartments() {
         return departmentService.getAllDepartments();
     }
 
     @ApiOperation(value = "获取工号")
     @GetMapping("/maxWorkID")
-    public RespBean maxWorkID(){
+    public RespBean maxWorkID() {
         return employeeService.maxWorkID();
     }
 
     @ApiOperation(value = "添加员工")
     @PostMapping("/")
-    public RespBean addEmp(@RequestBody Employee employee){
+    public RespBean addEmp(@RequestBody Employee employee) {
         return employeeService.addEmp(employee);
     }
 
     @ApiOperation(value = "更新员工")
     @PutMapping("/")
-    public RespBean updateEmp(@RequestBody Employee employee){
-        if(employeeService.updateById(employee)){
+    public RespBean updateEmp(@RequestBody Employee employee) {
+        if (employeeService.updateById(employee)) {
             return RespBean.success("更新成功！");
         }
         return RespBean.error("更新失败");
@@ -113,30 +113,30 @@ public class EmployeeController {
 
     @ApiOperation(value = "删除员工")
     @DeleteMapping("/{id}")
-    public RespBean deleteEmp(@PathVariable Integer id){
-        if(employeeService.removeById(id)){
-            return RespBean.success("删除员工");
+    public RespBean deleteEmp(@PathVariable Integer id) {
+        if (employeeService.removeById(id)) {
+            return RespBean.success("删除成功");
         }
         return RespBean.error("删除失败");
     }
 
     @ApiOperation(value = "导出员工数据")
-    @GetMapping(value = "/export",produces ="application/octet-stream" )
-    public void exportEmployee(HttpServletResponse response){
+    @GetMapping(value = "/export", produces = "application/octet-stream")
+    public void exportEmployee(HttpServletResponse response) {
         List<Employee> list = employeeService.getEmployee(null);
-        ExportParams params = new ExportParams("员工表","员工表", ExcelType.HSSF);
-        Workbook workbook = ExcelExportUtil.exportExcel(params,Employee.class,list);
+        ExportParams params = new ExportParams("员工表", "员工表", ExcelType.HSSF);
+        Workbook workbook = ExcelExportUtil.exportExcel(params, Employee.class, list);
         ServletOutputStream outputStream = null;
         try {
-            response.setHeader("Content-Type","application/octet-stream");
-            response.setHeader("Content-Disposition","attachment;filename="
-                    + URLEncoder.encode("员工表.xls","UTF-8"));
+            response.setHeader("Content-Type", "application/octet-stream");
+            response.setHeader("Content-Disposition", "attachment;filename="
+                    + URLEncoder.encode("员工表.xls", "UTF-8"));
             outputStream = response.getOutputStream();
             workbook.write(outputStream);
         } catch (IOException e) {
             e.printStackTrace();
-        }finally {
-            if(null!=outputStream){
+        } finally {
+            if (null != outputStream) {
                 try {
                     outputStream.close();
                 } catch (IOException e) {
@@ -148,7 +148,7 @@ public class EmployeeController {
 
     @ApiOperation(value = "导入员工数据")
     @PostMapping("/import")
-    public RespBean importEmployee(MultipartFile file){
+    public RespBean importEmployee(MultipartFile file) {
         ImportParams params = new ImportParams();
         List<Nation> nationList = nationService.list();
         List<PoliticsStatus> politicsStatusList = politicsStatusService.list();
@@ -158,44 +158,44 @@ public class EmployeeController {
         //去掉标题行
         params.setTitleRows(1);
         try {
-            List<Employee> list = ExcelImportUtil.importExcel(file.getInputStream(),Employee.class,params);
+            List<Employee> list = ExcelImportUtil.importExcel(file.getInputStream(), Employee.class, params);
             list.forEach(employee -> {
                 LocalDate beginContract = employee.getBeginContract();
                 LocalDate endContract = employee.getEndContract();
                 long days = beginContract.until(endContract, ChronoUnit.DAYS);
                 DecimalFormat decimalFormat = new DecimalFormat("##.00");
-                employee.setContractTerm(Double.parseDouble(decimalFormat.format(days/365.00)));
+                employee.setContractTerm(Double.parseDouble(decimalFormat.format(days / 365.00)));
 
-                for(Nation nation : nationList){
-                    if(employee.getNation().getName().equals(nation.getName())){
+                for (Nation nation : nationList) {
+                    if (employee.getNation().getName().equals(nation.getName())) {
                         employee.setNationId(nation.getId());
                         break;
                     }
                 }
 
-                for(PoliticsStatus politicsStatus : politicsStatusList){
-                    if(employee.getPoliticsStatus().getName().equals(politicsStatus.getName())){
+                for (PoliticsStatus politicsStatus : politicsStatusList) {
+                    if (employee.getPoliticsStatus().getName().equals(politicsStatus.getName())) {
                         employee.setPoliticId(politicsStatus.getId());
                         break;
                     }
                 }
 
-                for(Department department : departmentList){
-                    if(employee.getDepartment().getName().equals(department.getName())){
+                for (Department department : departmentList) {
+                    if (employee.getDepartment().getName().equals(department.getName())) {
                         employee.setDepartmentId(department.getId());
                         break;
                     }
                 }
 
-                for(Joblevel joblevel:joblevelList){
-                    if(employee.getJoblevel().getName().equals(joblevel.getName())){
+                for (Joblevel joblevel : joblevelList) {
+                    if (employee.getJoblevel().getName().equals(joblevel.getName())) {
                         employee.setJobLevelId(joblevel.getId());
                         break;
                     }
                 }
 
-                for(Position position : positionList){
-                    if(employee.getPosition().getName().equals(position.getName())){
+                for (Position position : positionList) {
+                    if (employee.getPosition().getName().equals(position.getName())) {
                         employee.setPosId(position.getId());
                         break;
                     }
@@ -203,7 +203,7 @@ public class EmployeeController {
 
             });
 
-            if(employeeService.saveBatch(list)){
+            if (employeeService.saveBatch(list)) {
                 return RespBean.success("导入成功");
             }
         } catch (Exception e) {
@@ -211,7 +211,6 @@ public class EmployeeController {
         }
         return RespBean.error("导入失败");
     }
-
 
 
 }
